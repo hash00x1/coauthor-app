@@ -1,0 +1,79 @@
+#--------------------------------------------------------------------------------------------------
+# GENERAL
+#--------------------------------------------------------------------------------------------------
+
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Build output directories
+out/
+out-build/
+out-vscode/
+out-vscode-min/
+out-vscode-web/
+out-vscode-web-min/
+.build/
+
+# Final application packages (the compiled app)
+VSCode-*
+vscode-web
+
+# Pre-compiled extension packages
+*.vsix
+
+
+#--------------------------------------------------------------------------------------------------
+# PROJECT & OS SPECIFIC
+#--------------------------------------------------------------------------------------------------
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Optional IDE configuration.
+# You might want to keep .vscode/launch.json if it's shared, but ignore user settings.
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/user-data/
+.vscode/extensions.json
+.vscode-test/
+
+# User-specific settings from VS Code fork
+.vscode-oss-dev/
+
+
+.cache
+npm-debug.log
+Thumbs.db
+node_modules/
+.build/
+.vscode/extensions/**/out/
+extensions/**/dist/
+/out*/
+/extensions/**/out/
+build/node_modules
+coverage/
+test_data/
+test-results/
+test-results.xml
+vscode.lsif
+vscode.db
+/.profile-oss
+/cli/target
+/cli/openssl
+product.overrides.json
+*.snap.actual
+*.tsbuildinfo
+.vscode-test
