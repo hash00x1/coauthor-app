@@ -143,6 +143,18 @@ rm -rf "../VSCode-${PLATFORM}-${ARCH}"
 echo -e "  ${GREEN}✓${NC} Cleaned"
 echo ""
 
+# Check for critical source directories
+if [ ! -d "src/vscode-dts" ]; then
+    echo -e "${YELLOW}  Restoring missing src/vscode-dts...${NC}"
+    if git checkout HEAD -- src/vscode-dts; then
+        echo -e "  ${GREEN}✓${NC} Restored src/vscode-dts"
+    else
+        echo -e "${RED}✗ Failed to restore src/vscode-dts${NC}"
+        echo -e "  Your repository checkout appears corrupted."
+        exit 1
+    fi
+fi
+
 # Compile TypeScript
 echo -e "${YELLOW}[3/6] Compiling application source...${NC}"
 echo -e "  ${BLUE}This may take 3-5 minutes...${NC}"
