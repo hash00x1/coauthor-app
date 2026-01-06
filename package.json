@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "build-coauthor": "./scripts/build-coauthor.sh",
-    "clean": "gulp clean-extension-build && rm -rf out-build out-vscode out-vscode-min .build",
+    "clean": "gulp clean-extensions-build && rm -rf out-build out-vscode out-vscode-min .build",
     "test": "echo Please run any of the test scripts from the scripts folder.",
     "test-browser": "npx playwright install && node test/unit/browser/index.js",
     "test-browser-no-install": "node test/unit/browser/index.js",
