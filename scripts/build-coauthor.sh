@@ -100,6 +100,17 @@ if [ "$PLATFORM" = "darwin" ]; then
     if [ -z "${CXX:-}" ]; then
         export CXX="$XRUN_CLANGXX"
     fi
+
+    # Set SDKROOT so the compiler can find standard headers like <unordered_set>
+    export SDKROOT="$(xcrun --show-sdk-path)"
+
+    # Also set via npm config so subprocesses (node-gyp) pick them up correctly
+    npm config set CC "$CC" --location=project 2>/dev/null || true
+    npm config set CXX "$CXX" --location=project 2>/dev/null || true
+    # npm doesn't have a direct SDKROOT config, but node-gyp respects the env var
+
+    echo -e "  ${GREEN}✓${NC} macOS toolchain: CC=${CC}"
+    echo -e "  ${GREEN}✓${NC} macOS SDKROOT: ${SDKROOT}"
 fi
 
 # Check if .vsix exists

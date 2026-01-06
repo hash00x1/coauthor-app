@@ -58,6 +58,7 @@ function validateMacOSToolchain() {
 		console.error(`\x1b[1;36m    unset CC CXX\x1b[0;0m`);
 		console.error(`\x1b[1;36m    export CC="$(xcrun --find clang)"\x1b[0;0m`);
 		console.error(`\x1b[1;36m    export CXX="$(xcrun --find clang++)"\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export SDKROOT="$(xcrun --show-sdk-path)"\x1b[0;0m`);
 		console.error(`\x1b[1;33m*** Or use the build script: ./scripts/build-coauthor.sh ***\x1b[0;0m`);
 		throw new Error('Invalid CC path');
 	}
@@ -68,6 +69,7 @@ function validateMacOSToolchain() {
 		console.error(`\x1b[1;36m    unset CC CXX\x1b[0;0m`);
 		console.error(`\x1b[1;36m    export CC="$(xcrun --find clang)"\x1b[0;0m`);
 		console.error(`\x1b[1;36m    export CXX="$(xcrun --find clang++)"\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export SDKROOT="$(xcrun --show-sdk-path)"\x1b[0;0m`);
 		console.error(`\x1b[1;33m*** Or use the build script: ./scripts/build-coauthor.sh ***\x1b[0;0m`);
 		throw new Error('Invalid CXX path');
 	}
