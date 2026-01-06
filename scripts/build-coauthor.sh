@@ -107,6 +107,14 @@ NODE_OPTIONS=--max-old-space-size=6144 \
 echo -e "  ${GREEN}✓${NC} Extensions built"
 echo ""
 
+# Create required directories (must exist before bundling/packaging)
+echo -e "${YELLOW}[4.5/6] Creating required directories...${NC}"
+mkdir -p out-build/vs/workbench/services/extensionManagement/common/media
+mkdir -p .build/telemetry
+mkdir -p ".build/policies/${PLATFORM}"
+echo -e "  ${GREEN}✓${NC} Created"
+echo ""
+
 # Bundle application
 echo -e "${YELLOW}[5/6] Bundling application...${NC}"
 echo -e "  ${BLUE}This may take 2-3 minutes...${NC}"
