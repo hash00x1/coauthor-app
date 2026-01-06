@@ -128,11 +128,9 @@ echo -e "  ${GREEN}✓${NC} CoAuthor extension found ($VSIX_SIZE)"
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
     echo -e "${YELLOW}  Installing dependencies...${NC}"
-    # Remove any potential "poison" in local .npmrc from previous failed runs
-    npm config delete CC --location=project 2>/dev/null || true
-    npm config delete CXX --location=project 2>/dev/null || true
 
     # Run install with toolchain variables explicitly passed
+    # This avoids "poisoning" the local .npmrc with npm config set
     CC="$CC" CXX="$CXX" SDKROOT="$SDKROOT" npm install
 fi
 
