@@ -104,10 +104,9 @@ if [ "$PLATFORM" = "darwin" ]; then
     # Set SDKROOT so the compiler can find standard headers like <unordered_set>
     export SDKROOT="$(xcrun --show-sdk-path)"
 
-    # Also set via npm config so subprocesses (node-gyp) pick them up correctly
-    npm config set CC "$CC" --location=project 2>/dev/null || true
-    npm config set CXX "$CXX" --location=project 2>/dev/null || true
-    # npm doesn't have a direct SDKROOT config, but node-gyp respects the env var
+    # Ensure a sane PATH so we don't get "spawnSync /bin/sh ENOENT"
+    # This ensures standard macOS system paths are present.
+    export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:$PATH"
 
     echo -e "  ${GREEN}✓${NC} macOS toolchain: CC=${CC}"
     echo -e "  ${GREEN}✓${NC} macOS SDKROOT: ${SDKROOT}"
@@ -129,7 +128,12 @@ echo -e "  ${GREEN}✓${NC} CoAuthor extension found ($VSIX_SIZE)"
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
     echo -e "${YELLOW}  Installing dependencies...${NC}"
-    npm install
+    # Remove any potential "poison" in local .npmrc from previous failed runs
+    npm config delete CC --location=project 2>/dev/null || true
+    npm config delete CXX --location=project 2>/dev/null || true
+
+    # Run install with toolchain variables explicitly passed
+    CC="$CC" CXX="$CXX" SDKROOT="$SDKROOT" npm install
 fi
 
 echo ""
