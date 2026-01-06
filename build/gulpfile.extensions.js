@@ -223,6 +223,7 @@ exports.compileExtensionMediaBuildTask = compileExtensionMediaBuildTask;
  * Cleans the build directory for extensions
  */
 const cleanExtensionsBuildTask = task.define('clean-extensions-build', util.rimraf('.build/extensions'));
+gulp.task(cleanExtensionsBuildTask);
 exports.cleanExtensionsBuildTask = cleanExtensionsBuildTask;
 
 /**

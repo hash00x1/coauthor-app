@@ -101,8 +101,8 @@ echo -e "${YELLOW}[4/6] Building extensions...${NC}"
 echo -e "  ${BLUE}Building writer-friendly extensions only...${NC}"
 NODE_OPTIONS=--max-old-space-size=6144 \
   node ./node_modules/gulp/bin/gulp.js \
-    clean-extension-build \
-    compile-extension-build-non-native \
+    clean-extensions-build \
+    compile-non-native-extensions-build \
     compile-extension-media-build
 echo -e "  ${GREEN}✓${NC} Extensions built"
 echo ""
