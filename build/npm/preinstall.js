@@ -40,6 +40,51 @@ if (process.arch !== os.arch()) {
 	console.error(`\x1b[1;31m*** This can greatly increase the build time of vs code. ***\x1b[0;0m`);
 }
 
+if (process.platform === 'darwin') {
+	validateMacOSToolchain();
+}
+
+function validateMacOSToolchain() {
+	// On macOS, node-gyp needs clang. Users often have CC/CXX pointing to non-existent paths
+	// (e.g. different Xcode versions). Validate here and provide helpful guidance.
+	const cc = process.env.CC;
+	const cxx = process.env.CXX;
+
+	// If CC/CXX are set, verify they exist
+	if (cc && !fs.existsSync(cc)) {
+		console.error(`\x1b[1;31m*** CC is set to a non-existent path: ${cc} ***\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** This will cause native module compilation to fail. ***\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** Fix: Run these commands before npm install: ***\x1b[0;0m`);
+		console.error(`\x1b[1;36m    unset CC CXX\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export CC="$(xcrun --find clang)"\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export CXX="$(xcrun --find clang++)"\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** Or use the build script: ./scripts/build-coauthor.sh ***\x1b[0;0m`);
+		throw new Error('Invalid CC path');
+	}
+	if (cxx && !fs.existsSync(cxx)) {
+		console.error(`\x1b[1;31m*** CXX is set to a non-existent path: ${cxx} ***\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** This will cause native module compilation to fail. ***\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** Fix: Run these commands before npm install: ***\x1b[0;0m`);
+		console.error(`\x1b[1;36m    unset CC CXX\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export CC="$(xcrun --find clang)"\x1b[0;0m`);
+		console.error(`\x1b[1;36m    export CXX="$(xcrun --find clang++)"\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** Or use the build script: ./scripts/build-coauthor.sh ***\x1b[0;0m`);
+		throw new Error('Invalid CXX path');
+	}
+
+	// Verify xcrun can find clang (Command Line Tools installed)
+	try {
+		const xcrunClang = cp.execSync('xcrun --find clang', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+		if (!xcrunClang || !fs.existsSync(xcrunClang)) {
+			throw new Error('xcrun returned invalid path');
+		}
+	} catch (e) {
+		console.error(`\x1b[1;31m*** Cannot locate clang via xcrun. Xcode Command Line Tools may be missing. ***\x1b[0;0m`);
+		console.error(`\x1b[1;33m*** Run: xcode-select --install ***\x1b[0;0m`);
+		throw new Error('Missing Xcode Command Line Tools');
+	}
+}
+
 function hasSupportedVisualStudioVersion() {
 	const fs = require('fs');
 	const path = require('path');

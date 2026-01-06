@@ -60,6 +60,48 @@ fi
 NPM_VERSION=$(npm --version)
 echo -e "  ${GREEN}✓${NC} npm $NPM_VERSION"
 
+# macOS toolchain sanity (node-gyp/native modules)
+if [ "$PLATFORM" = "darwin" ]; then
+    echo -e "${YELLOW}  Checking macOS build toolchain (clang)...${NC}"
+
+    if ! command -v xcrun &> /dev/null; then
+        echo -e "${RED}✗ xcrun not found (Xcode Command Line Tools missing?)${NC}"
+        echo -e "  Run: ${BLUE}xcode-select --install${NC}"
+        exit 1
+    fi
+
+    XRUN_CLANG="$(xcrun --find clang 2>/dev/null || true)"
+    XRUN_CLANGXX="$(xcrun --find clang++ 2>/dev/null || true)"
+
+    if [ -z "$XRUN_CLANG" ] || [ -z "$XRUN_CLANGXX" ]; then
+        echo -e "${RED}✗ Unable to locate clang via xcrun${NC}"
+        echo -e "  Current developer dir: ${BLUE}$(xcode-select -p 2>/dev/null || echo 'unknown')${NC}"
+        echo -e "  Try: ${BLUE}sudo xcode-select -s /Library/Developer/CommandLineTools${NC}"
+        exit 1
+    fi
+
+    # If CC/CXX are set but point to a non-existent clang path, node-gyp will fail.
+    if [ -n "${CC:-}" ] && [ ! -x "${CC:-}" ]; then
+        echo -e "  ${YELLOW}CC is set but invalid:${NC} ${CC}"
+        export CC="$XRUN_CLANG"
+        echo -e "  ${GREEN}✓${NC} Using clang from xcrun for CC: ${CC}"
+    fi
+
+    if [ -n "${CXX:-}" ] && [ ! -x "${CXX:-}" ]; then
+        echo -e "  ${YELLOW}CXX is set but invalid:${NC} ${CXX}"
+        export CXX="$XRUN_CLANGXX"
+        echo -e "  ${GREEN}✓${NC} Using clang++ from xcrun for CXX: ${CXX}"
+    fi
+
+    # If unset, prefer xcrun's toolchain (safe default across Xcode/CLT installs)
+    if [ -z "${CC:-}" ]; then
+        export CC="$XRUN_CLANG"
+    fi
+    if [ -z "${CXX:-}" ]; then
+        export CXX="$XRUN_CLANGXX"
+    fi
+fi
+
 # Check if .vsix exists
 if [ ! -f "resources/app/extensions-vsix/coauthor-extension.vsix" ]; then
     echo -e "${RED}✗ CoAuthor extension .vsix not found!${NC}"
