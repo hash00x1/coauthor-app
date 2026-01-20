@@ -877,8 +877,10 @@ export class ChatSetupContribution extends Disposable implements IWorkbenchContr
 	}
 
 	private registerSetupAgents(context: ChatEntitlementContext, controller: Lazy<ChatSetupController>): void {
-		// COAUTHOR: Disabled Copilot setup flow
-		return;
+		// COAUTHOR: Disabled Copilot setup flow - use coauthor-agent instead
+		if (true as boolean) {
+			return;
+		}
 
 		const defaultAgentDisposables = markAsSingleton(new MutableDisposable()); // prevents flicker on window reload
 		const vscodeAgentDisposables = markAsSingleton(new MutableDisposable());

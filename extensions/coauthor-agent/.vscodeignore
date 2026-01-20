@@ -1,6 +1,7 @@
 src/
+out/
 tsconfig.json
-webpack.config.js
+extension.webpack.config.js
 node_modules/
 *.map
 .vscode-test/
