@@ -1,0 +1,65 @@
+---
+description: Rules for implementing the CoAuthor Agent extension
+globs: extensions/coauthor-agent/**
+alwaysApply: false
+---
+
+# CoAuthor Agent Extension Rules
+
+## Architecture Reference
+See `build/docs/plan-advanced.md` for the full architecture and multi-agent workflow.
+
+## File Responsibilities
+
+| File | Purpose | Owner Agent |
+|------|---------|-------------|
+| `src/types.ts` | Type definitions and contracts | Agent-0 |
+| `src/extension.ts` | Entry point, ChatParticipant registration | Agent-4 |
+| `src/agent.ts` | Webhook/LLM invocation logic | Agent-5 |
+| `package.json` | Extension manifest | Agent-1 |
+| `tsconfig.json` | TypeScript config | Agent-1 |
+| `webpack.config.js` | Build config | Agent-1 |
+
+## Implementation Contracts
+
+### types.ts
+```typescript
+export interface CoAuthorConfig {
+    webhookUrl: string;
+    apiKey: string;
+    modelId?: string;
+    maxTokens?: number;
+}
+
+export interface LLMRequest {
+    prompt: string;
+    history: Array<{ role: 'user' | 'assistant'; content: string }>;
+    config: Partial<CoAuthorConfig>;
+}
+
+export type LLMInvoker = (
+    request: LLMRequest,
+    stream: vscode.ChatResponseStream,
+    token: vscode.CancellationToken
+) => Promise<void>;
+```
+
+### extension.ts Requirements
+1. Import from `./types` and `./agent`
+2. Register ChatParticipant with ID `coauthor.agent`
+3. Handler must call `stream.progress()` before async work
+4. Catch all errors and display via `stream.markdown()`
+5. Push participant to `context.subscriptions`
+
+### agent.ts Requirements
+1. Export function matching `LLMInvoker` signature
+2. Read config from `vscode.workspace.getConfiguration('coauthor.agent')`
+3. Use `fetch()` with streaming response handling
+4. Check `token.isCancellationRequested` in read loop
+5. Throw descriptive `Error` on HTTP failures
+
+## Do NOT
+- Import from `src/vs/` (this is an extension, not core code)
+- Use synchronous file I/O
+- Hardcode API keys or URLs
+- Block the extension host with long-running sync operations

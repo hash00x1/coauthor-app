@@ -1,0 +1,42 @@
+---
+description: Core principles for all code changes in CoAuthor
+globs:
+alwaysApply: true
+---
+
+# CoAuthor Development Standards
+
+## Code Quality
+- **Surgical changes only**: Modify only what is necessary. No refactoring unless explicitly requested.
+- **No bloat**: No unnecessary comments, console.logs, or dead code.
+- **Professional output**: Code must compile, lint, and run without errors.
+
+## Project Structure
+- Extensions go in `extensions/`
+- Core workbench code is in `src/vs/workbench/`
+- Documentation goes in `build/docs/`
+- No new top-level folders without explicit approval
+
+## TypeScript Standards
+- Use strict typing. Avoid `any` unless absolutely necessary.
+- Prefer `interface` over `type` for object shapes.
+- Export only what is needed.
+- Match existing code style in the file being modified.
+
+## Summaries & Documentation
+- Summaries describe ONLY what changed and why.
+- No fluff, no repetition, no emoji.
+- Maximum 5 bullet points per summary.
+
+## Multi-Agent Workflow
+When working as part of a multi-agent team (see `build/docs/plan-advanced.md`):
+- Read and follow your assigned task EXACTLY.
+- Do NOT modify files outside your designated scope.
+- Verify your output against the "Verification Criteria" before completing.
+- If blocked by a dependency, STOP and report the blocker.
+
+## VS Code Extension Development
+- Use `vscode` namespace APIs, not direct Node.js alternatives where VS Code provides one.
+- Externalize `vscode` in webpack config.
+- Follow activation event patterns (`onChatParticipant:*`, `onCommand:*`).
+- Dispose all subscriptions in `deactivate()` or via `context.subscriptions`.

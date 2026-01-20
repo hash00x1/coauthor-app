@@ -1,0 +1,76 @@
+---
+description: Terminal commands for CoAuthor development
+globs:
+alwaysApply: false
+---
+
+# Terminal Commands
+
+## Build Commands
+```bash
+# Compile TypeScript
+npm run compile
+
+# Compile extensions only
+npm run gulp compile-extensions
+
+# Build full application (macOS ARM64)
+npm run gulp vscode-darwin-arm64
+
+# Watch mode
+npm run watch
+```
+
+## Extension Development
+```bash
+# Install extension dependencies
+cd extensions/coauthor-agent && npm install
+
+# Compile single extension
+cd extensions/coauthor-agent && npm run compile
+
+# Package extension
+cd extensions/coauthor-agent && npm run package
+```
+
+## Testing (Comprehensive)
+
+VS Code uses layered testing. Test incrementally, not just at the end.
+
+```bash
+# Quick TypeScript check (no emit)
+cd extensions/coauthor-agent && npx tsc --noEmit
+
+# Full core compilation
+npm run compile -- --max-old-space-size=4096
+
+# Compile single extension
+npm run gulp compile-extension:coauthor-agent
+
+# Run extension in development host
+# Press F5 in VS Code with extension folder open
+
+# Run unit tests
+npm test
+
+# Run integration tests
+./scripts/test-integration.sh
+```
+
+### Gate Testing Commands
+```bash
+# GATE 1: Scaffold valid
+cd extensions/coauthor-agent && npm install && npx tsc --noEmit
+
+# GATE 2: Extension compiles
+cd extensions/coauthor-agent && npm run compile
+ls -la dist/extension.js
+
+# GATE 3: In bundle
+npm run gulp compile-extension:coauthor-agent
+```
+
+## Common Issues
+- If `npm install` fails, try `npm install --legacy-peer-deps`
+- If gulp tasks fail, ensure you're in the repository root
+- If extension doesn't load, check `package.json` activation events

@@ -1,0 +1,62 @@
+{
+  "name": "coauthor-agent",
+  "displayName": "CoAuthor Agent",
+  "description": "Local AI Assistant for CoAuthor",
+  "version": "0.0.1",
+  "publisher": "coauthor",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI",
+    "Chat"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onChatParticipant:coauthor.agent"
+  ],
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "coauthor.agent",
+        "name": "coauthor",
+        "fullName": "CoAuthor Agent",
+        "description": "Ask the CoAuthor AI Agent",
+        "isDefault": true
+      }
+    ],
+    "commands": [
+      {
+        "command": "coauthor.agent.clear",
+        "title": "Clear Chat"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.3.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.6",
+    "@vscode/test-electron": "^2.3.9",
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}

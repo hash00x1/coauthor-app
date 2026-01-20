@@ -1,0 +1,170 @@
+---
+description: Rules for multi-agent workflow execution
+globs:
+alwaysApply: false
+---
+
+# Multi-Agent Workflow Execution Rules
+
+## Reference Document
+The authoritative plan is `build/docs/plan-advanced.md`. Read it fully before starting any task.
+
+## Agent Identification
+When spawned, you will be told which agent you are (Agent-0 through Agent-7). Execute ONLY your assigned task.
+
+## Execution Protocol
+
+### Before Writing Code
+1. Read `build/docs/plan-advanced.md` completely
+2. Identify your agent number and task
+3. Check dependencies: ensure prerequisite agents have completed
+4. Read the "Input Context" for your specific agent
+5. Review the "Verification Criteria" you must satisfy
+
+### While Writing Code
+1. Write ONLY to your designated output files
+2. Do NOT modify files owned by other agents
+3. Follow the contracts defined in `types.ts` (Agent-0's output)
+4. Match existing code style in the repository
+5. No TODOs, no placeholder comments, no incomplete implementations
+
+### After Writing Code
+1. Verify your output against ALL verification criteria
+2. If any criterion fails, fix it before reporting completion
+3. Report completion with a brief summary (max 3 bullet points)
+
+## Agent-Specific Rules
+
+### Agent-0 (Contracts)
+- Output: `extensions/coauthor-agent/src/types.ts`
+- Must be pure type definitions (no runtime code)
+- All types must be exported
+- Include JSDoc comments for complex types
+
+### Agent-1 (Scaffold)
+- Output: `package.json`, `tsconfig.json`, `webpack.config.js`, `.vscodeignore`
+- package.json must have `contributes.chatParticipants`
+- tsconfig must target ES2022 or later
+- webpack must externalize `vscode`
+
+### Agent-2 (product.json)
+- Output: Modify `/product.json`
+- Remove `defaultChatAgent` references to github.copilot
+- Do NOT change branding, URLs, or other unrelated settings
+- Preserve JSON formatting
+
+### Agent-3 (chatSetup.ts)
+- Output: Modify `src/vs/workbench/contrib/chat/browser/chatSetup.ts`
+- Use LEAST invasive change (early return or context key)
+- Add comment: `// COAUTHOR: Disabled Copilot setup flow`
+- Must compile without TypeScript errors
+
+### Agent-4 (extension.ts)
+- Output: `extensions/coauthor-agent/src/extension.ts`
+- Import from `./types` and `./agent`
+- Register `coauthor.agent` ChatParticipant
+- Handle errors gracefully
+
+### Agent-5 (agent.ts)
+- Output: `extensions/coauthor-agent/src/agent.ts`
+- Implement `LLMInvoker` signature from types.ts
+- Use streaming fetch with `response.body.getReader()`
+- Respect cancellation token
+
+### Agent-6 (Build Integration)
+- May modify: `build/gulpfile.extensions.js`, build manifests
+- Verify extension compiles with `gulp compile-extensions`
+- Verify extension appears in bundle
+
+### Agent-7 (Validation)
+- No code output
+- Execute test plan from plan-advanced.md
+- Report pass/fail for each criterion
+- If failure, identify which agent's output is broken
+
+## Failure Protocol
+If you cannot complete your task:
+1. STOP immediately
+2. Report the blocker clearly:
+   - What file/dependency is missing?
+   - What error occurred?
+   - Which prerequisite agent may have failed?
+3. Do NOT write partial or placeholder code
+
+## Communication Format
+When reporting completion:
+```
+## Agent-[N] Complete
+
+**Files Modified:**
+- path/to/file.ts
+
+**Verification:**
+- [x] Criterion 1
+- [x] Criterion 2
+
+**Notes:** (if any)
+```
+
+---
+
+## Testing Protocol (MANDATORY)
+
+VS Code uses a layered testing approach. For in-tree extensions:
+
+### Per-Agent Testing (Immediate)
+After EACH agent completes, verify compilation:
+```bash
+# For extension files (Agent-0, 1, 4, 5)
+cd extensions/coauthor-agent && npx tsc --noEmit
+
+# For core modifications (Agent-3)
+npm run compile -- --max-old-space-size=4096
+```
+
+### Gate Testing (Between Phases)
+
+**GATE 1** (After Phase 1):
+```bash
+# Verify extension scaffold
+cd extensions/coauthor-agent && npm install && npx tsc --noEmit
+# Verify core compiles
+npm run compile
+```
+
+**GATE 2** (After Phase 2):
+```bash
+# Build extension
+cd extensions/coauthor-agent && npm run compile
+# Verify in dev host (manual)
+# Press F5 to launch Extension Development Host
+```
+
+**GATE 3** (After Phase 3):
+```bash
+# Full extension compilation
+npm run gulp compile-extension:coauthor-agent
+# Verify bundled
+ls -la extensions/coauthor-agent/dist/
+```
+
+### End-to-End Testing (Phase 4)
+```bash
+# Build full application
+npm run gulp vscode-darwin-arm64
+
+# Launch and manually verify:
+# 1. Chat UI opens (Cmd+Shift+I)
+# 2. No Copilot sign-in prompt
+# 3. Messages route to webhook
+# 4. Responses stream back
+```
+
+### Testing Checklist for Agent-7
+- [ ] `npm run compile` passes with zero errors
+- [ ] `npm run gulp compile-extension:coauthor-agent` succeeds
+- [ ] Extension loads in dev host without activation errors
+- [ ] Chat participant `coauthor.agent` appears in chat
+- [ ] Webhook receives requests (use mock server or network inspection)
+- [ ] Streaming responses render in chat UI
+- [ ] Cancellation stops the request

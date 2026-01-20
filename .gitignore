@@ -53,7 +53,8 @@ Thumbs.db
 # User-specific settings from VS Code fork
 .vscode-oss-dev/
 
-
+build/docs/
+build/docs/**
 .cache
 npm-debug.log
 Thumbs.db
@@ -77,3 +78,4 @@ product.overrides.json
 *.snap.actual
 *.tsbuildinfo
 .vscode-test
+build/docs/

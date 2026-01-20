@@ -1,0 +1,48 @@
+---
+description: Rules for webhook/API integration in CoAuthor Agent
+globs: extensions/coauthor-agent/src/agent.ts
+alwaysApply: false
+---
+
+# Webhook & API Integration Rules
+
+## Request Format
+When calling external LLM webhooks:
+```typescript
+const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+        prompt: string,
+        history: Array<{ role: 'user' | 'assistant', content: string }>,
+        config: { modelId?: string, maxTokens?: number }
+    })
+});
+```
+
+## Response Handling
+- Expect streaming response (Server-Sent Events or chunked transfer)
+- Use `response.body.getReader()` for streaming
+- Decode with `TextDecoder({ stream: true })`
+- Forward chunks to `stream.markdown(chunk)`
+
+## Error Handling
+- Check `response.ok` before reading body
+- Throw descriptive errors:
+  - `Error('Webhook returned 401: Unauthorized - check API key')`
+  - `Error('Webhook returned 429: Rate limited')`
+  - `Error('Network error: ${error.message}')`
+- Never expose raw stack traces to the user
+
+## Security
+- NEVER log API keys
+- Read credentials from VS Code configuration or SecretStorage
+- Do not hardcode URLs (use configuration)
+
+## Timeouts
+- Implement reasonable timeout (30-60 seconds)
+- Respect `CancellationToken` for user-initiated cancellation
+- Clean up resources on cancellation
