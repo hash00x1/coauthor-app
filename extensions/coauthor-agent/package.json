@@ -30,7 +30,22 @@
         "command": "coauthor.agent.clear",
         "title": "Clear Chat"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "CoAuthor Agent",
+      "properties": {
+        "coauthor.agent.webhookUrl": {
+          "type": "string",
+          "default": "",
+          "description": "The URL endpoint for the LLM webhook backend"
+        },
+        "coauthor.agent.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for authentication with the webhook"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -44,18 +59,9 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.90.0",
-    "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@typescript-eslint/parser": "^7.1.0",
-    "eslint": "^8.57.0",
-    "glob": "^10.3.10",
-    "mocha": "^10.3.0",
-    "typescript": "^5.3.3",
-    "@vscode/test-cli": "^0.0.6",
-    "@vscode/test-electron": "^2.3.9",
     "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4"
   }
